@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "dilek-kocluk-sistemi",
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ]
+}

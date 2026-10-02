@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dilek Koçluk | Öğrenci Koçluk ve Haftalık Takip Sistemi</title>
+  <meta name="description"
+    content="Öğretmen ve öğrencilere özel haftalık çalışma programı, görev takip ve koçluk yönetim platformu.">
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <!-- Toast Bildirim Alanı -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Üst Navigasyon Çubuğu -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-logo">
+        <div class="logo-icon">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div class="logo-text">
+          <span class="brand-name">Dilek<span class="brand-highlight">Koçluk</span></span>
+          <span class="brand-tagline">Eğitim & Takip Platformu</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Tema Değiştirici -->
+        <button id="theme-toggle-btn" class="icon-btn" title="Temayı Değiştir" aria-label="Temayı Değiştir">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+
+        <!-- Giriş Yapmış Kullanıcı Bilgisi -->
+        <div id="user-profile-badge" class="user-profile-badge hidden">
+          <div class="avatar" id="header-avatar">Ö</div>
+          <div class="user-details">
+            <span class="user-fullname" id="header-fullname">Öğretmen</span>
+            <span class="user-role-tag" id="header-role">Koç / Admin</span>
+          </div>
+          <button id="logout-btn" class="btn-logout" title="Çıkış Yap">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Çıkış</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Ana İçerik Alanı -->
+  <main class="main-wrapper">
+
+    <!-- 1. GİRİŞ EKRANI (LOGIN) -->
+    <section id="login-section" class="login-section">
+      <div class="login-card">
+        <div class="login-header">
+          <div class="login-badge">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Güvenli Giriş Paneli</span>
+          </div>
+          <h2>Koçluk Portalına Hoş Geldiniz</h2>
+          <p>Devam etmek için kullanıcı adı ve şifrenizle giriş yapın.</p>
+        </div>
+
+        <!-- Hızlı Demo Giriş Butonları -->
+        <div class="demo-accounts-box">
+          <span class="demo-title"><i class="fa-solid fa-bolt"></i> Hızlı Test Girişi:</span>
+          <div class="demo-buttons">
+            <button type="button" class="btn-demo" onclick="fillDemoCredentials('ogretmen', '123456')">
+              <i class="fa-solid fa-user-tie"></i> Koç Girişi (Admin)
+            </button>
+            <button type="button" class="btn-demo" onclick="fillDemoCredentials('ahmet', '1234')">
+              <i class="fa-solid fa-user-graduate"></i> Öğrenci: Ahmet
+            </button>
+            <button type="button" class="btn-demo" onclick="fillDemoCredentials('zeynep', '1234')">
+              <i class="fa-solid fa-user-graduate"></i> Öğrenci: Zeynep
+            </button>
+          </div>
+        </div>
+
+        <form id="login-form" class="login-form">
+          <div class="form-group">
+            <label for="login-username">
+              <i class="fa-solid fa-user"></i> Kullanıcı Adı
+            </label>
+            <input type="text" id="login-username" placeholder="Kullanıcı adınızı girin..." required
+              autocomplete="username">
+          </div>
+
+          <div class="form-group">
+            <label for="login-password">
+              <i class="fa-solid fa-lock"></i> Şifre
+            </label>
+            <div class="password-input-wrapper">
+              <input type="password" id="login-password" placeholder="Şifrenizi girin..." required
+                autocomplete="current-password">
+              <button type="button" class="toggle-password" id="toggle-password-btn" aria-label="Şifreyi Göster">
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-footer">
+            <label class="remember-me">
+              <input type="checkbox" id="remember-me-check" checked>
+              <span>Beni Hatırla</span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">
+            <i class="fa-solid fa-right-to-bracket"></i> Sisteme Giriş Yap
+          </button>
+        </form>
+
+        <div class="login-info-box">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>Koç hesabından yeni öğrenciler tanımlayabilir ve her öğrenciye özel haftalık programlar
+            oluşturabilirsiniz.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. KOÇ (ADMIN) PANELİ -->
+    <section id="coach-dashboard" class="dashboard-section hidden">
+      <!-- Koç Üst Başlık & İstatistikler -->
+      <div class="dashboard-banner">
+        <div class="banner-text">
+          <h2><i class="fa-solid fa-chalkboard-user"></i> Koç Kontrol Paneli</h2>
+          <p>Öğrencilerinizin haftalık çalışma programlarını yönetin, hedefler belirleyin ve anlık ilerlemelerini takip
+            edin.</p>
+        </div>
+        <div class="banner-actions">
+          <button id="btn-open-add-student" class="btn btn-outline-white">
+            <i class="fa-solid fa-user-plus"></i> Yeni Öğrenci Ekle
+          </button>
+          <button id="btn-open-add-task-global" class="btn btn-primary-accent">
+            <i class="fa-solid fa-plus"></i> Yeni Görev Ata
+          </button>
+        </div>
+      </div>
+
+      <!-- Genel İstatistik Kartları -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon icon-students">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Toplam Öğrenci</span>
+            <span class="stat-value" id="stat-total-students">0</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon icon-tasks">
+            <i class="fa-solid fa-list-check"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Bu Haftaki Toplam Görev</span>
+            <span class="stat-value" id="stat-total-tasks">0</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon icon-completion">
+            <i class="fa-solid fa-chart-pie"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Genel Tamamlanma Oranı</span>
+            <span class="stat-value" id="stat-avg-completion">%0</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon icon-questions">
+            <i class="fa-solid fa-pen-nib"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Çözülen Soru / Hedef</span>
+            <span class="stat-value" id="stat-solved-questions">0 / 0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Öğrenci Seçim Sekmeleri -->
+      <div class="student-selection-panel">
+        <div class="panel-header">
+          <h3><i class="fa-solid fa-address-book"></i> Öğrenci Listesi</h3>
+          <span class="sub-desc">Programını görüntülemek ve düzenlemek istediğiniz öğrenciyi seçin:</span>
+        </div>
+        <div class="student-pills" id="coach-student-pills">
+          <!-- Dinamik Öğrenci Butonları js ile eklenecek -->
+        </div>
+      </div>
+
+      <!-- Seçili Öğrencinin Detay & Haftalık Programı -->
+      <div id="coach-student-details" class="student-detail-wrapper">
+        <!-- Öğrenci Başlık Bilgi Şeridi -->
+        <div class="student-overview-card">
+          <div class="student-profile-left">
+            <div class="student-large-avatar" id="detail-student-avatar">A</div>
+            <div class="student-meta">
+              <div class="name-badge-row">
+                <h3 id="detail-student-name">Ahmet Yılmaz</h3>
+                <span class="badge-target" id="detail-student-target">YKS Sayısal</span>
+              </div>
+              <div class="user-creds-preview">
+                <span><i class="fa-solid fa-user"></i> Kullanıcı: <strong
+                    id="detail-student-username">ahmet</strong></span>
+                <span><i class="fa-solid fa-key"></i> Şifre: <strong id="detail-student-password">••••</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="student-progress-summary">
+            <div class="progress-bar-container">
+              <div class="progress-labels">
+                <span>Haftalık Tamamlama</span>
+                <span class="progress-percent" id="detail-student-progress-pct">%0</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" id="detail-student-progress-fill" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="stats-mini-row">
+              <span><i class="fa-solid fa-circle-check text-success"></i> <b id="detail-student-completed-tasks">0</b> /
+                <span id="detail-student-total-tasks">0</span> Görev</span>
+              <span><i class="fa-solid fa-bullseye text-warning"></i> <b id="detail-student-solved-q">0</b> / <span
+                  id="detail-student-target-q">0</span> Soru</span>
+            </div>
+          </div>
+
+          <div class="student-actions-right">
+            <button class="btn btn-outline-danger btn-sm" id="btn-delete-student" title="Öğrenciyi Sil">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Koçun Haftalık Tavsiye ve Notu (Düzenlenebilir) -->
+        <div class="coach-note-card">
+          <div class="note-header">
+            <div class="note-title">
+              <i class="fa-solid fa-comment-dots"></i>
+              <span>Bu Haftaki Koçluk Notu & Hedefi</span>
+            </div>
+            <button class="btn btn-sm btn-primary" id="btn-save-coach-note">
+              <i class="fa-solid fa-floppy-disk"></i> Notu Kaydet
+            </button>
+          </div>
+          <textarea id="coach-note-textarea" rows="2"
+            placeholder="Öğrencinize bu hafta için özel tavsiye, motivasyon veya odaklanması gereken konuları yazın..."></textarea>
+        </div>
+
+        <!-- KOÇ PANELİ SEKMELERİ (HAFTALIK PROGRAM, DENEME ANALİZİ & KONU TAKİP ÇİZELGESİ) -->
+        <div class="dashboard-tabs-nav">
+          <button class="dash-tab-btn active" id="coach-tab-btn-schedule" onclick="switchCoachTab('schedule')">
+            <i class="fa-solid fa-calendar-week"></i> Haftalık Çalışma Programı
+          </button>
+          <button class="dash-tab-btn" id="coach-tab-btn-exam" onclick="switchCoachTab('exam-analysis')">
+            <i class="fa-solid fa-chart-line"></i> Haftalık Deneme & Konu Analizi
+            <span class="tab-badge" id="coach-tab-exam-count">0</span>
+          </button>
+          <button class="dash-tab-btn" id="coach-tab-btn-topics" onclick="switchCoachTab('topics-tracker')">
+            <i class="fa-solid fa-table-list"></i> TYT & AYT Konu Takip Çizelgesi
+            <span class="tab-badge badge-success" id="coach-tab-topic-count">0/0</span>
+          </button>
+          <button class="dash-tab-btn" id="coach-tab-btn-calendar" onclick="switchCoachTab('calendar')">
+            <i class="fa-solid fa-calendar-days"></i> Öğretmen Ders Takvimi
+            <span class="tab-badge badge-info" id="coach-tab-lesson-count">0</span>
+          </button>
+        </div>
+
+        <!-- SEÇENEK 1: HAFTALIK PROGRAM ÇİZELGESİ (ADMIN GÖRÜNÜMÜ) -->
+        <div id="coach-tab-content-schedule" class="tab-content-pane">
+          <div class="weekly-schedule-container">
+            <div class="schedule-header">
+              <div class="title-group">
+                <h3><i class="fa-solid fa-calendar-week"></i> Haftalık Çalışma Programı</h3>
+                <span class="schedule-sub">Pazartesi'den Pazar'a tüm günlerin ders ve görev dağılımı</span>
+              </div>
+              <div class="quick-tools">
+                <button class="btn btn-sm btn-secondary" onclick="exportScheduleData()">
+                  <i class="fa-solid fa-download"></i> Dışa Aktar
+                </button>
+              </div>
+            </div>
+
+            <!-- Günlük Kolonlar Grid -->
+            <div class="weekly-grid" id="coach-weekly-grid">
+              <!-- 7 Gün dinamik olarak JS ile render edilecek -->
+            </div>
+          </div>
+        </div>
+
+        <!-- SEÇENEK 2: DENEME SINAVI VE YANLIŞ KONU ANALİZİ (ADMIN GÖRÜNÜMÜ) -->
+        <div id="coach-tab-content-exam" class="tab-content-pane hidden">
+          <div class="exam-analysis-container">
+            <!-- Üst Kontrol Barı -->
+            <div class="exam-section-header">
+              <div class="title-group">
+                <h3><i class="fa-solid fa-chart-pie"></i> Haftalık Deneme Sınavları & Yanlış Konu Analizi</h3>
+                <span class="schedule-sub">Öğrencinin TYT & AYT deneme netleri, hedef takibi ve yanlış konularının koçluk yönetimi</span>
+              </div>
+              <div class="exam-header-actions">
+                <button class="btn btn-outline-primary" onclick="openEditTargetsModal()">
+                  <i class="fa-solid fa-bullseye"></i> Net Hedeflerini Düzenle
+                </button>
+                <button class="btn btn-primary" onclick="openAddExamModal()">
+                  <i class="fa-solid fa-plus"></i> Yeni Deneme Analizi Ekle
+                </button>
+              </div>
+            </div>
+
+            <!-- 1. TYT & AYT DENEME NET HEDEF KARTLARI -->
+            <div class="targets-comparison-grid" id="coach-targets-container">
+              <!-- Dinamik olarak JS ile render edilecek -->
+            </div>
+
+            <!-- 2. İNTERAKTİF DENEME İLERLEYİŞ & TREND GRAFİĞİ -->
+            <div class="exam-chart-card">
+              <div class="chart-header-flex">
+                <div class="chart-title-box">
+                  <div class="card-title">
+                    <i class="fa-solid fa-arrow-trend-up text-primary"></i>
+                    <span>Deneme Net İlerleyiş & Trend Grafiği</span>
+                  </div>
+                  <span class="card-sub-info">Zamana göre TYT ve AYT net gelişimi ile koç hedeflerinin karşılaştırması</span>
+                </div>
+                <div class="chart-controls">
+                  <div class="filter-pills" id="coach-chart-filter-pills">
+                    <button class="filter-pill active" data-chart="all" onclick="setCoachChartFilter('all')">Tüm Trend</button>
+                    <button class="filter-pill pill-tyt" data-chart="TYT" onclick="setCoachChartFilter('TYT')">Sadece TYT</button>
+                    <button class="filter-pill pill-ayt" data-chart="AYT" onclick="setCoachChartFilter('AYT')">Sadece AYT</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SVG Grafik Alanı -->
+              <div class="chart-svg-wrapper" id="coach-progress-chart-container">
+                <!-- JS tarafından SVG olarak çizilecek -->
+              </div>
+            </div>
+
+            <!-- Deneme İstatistik Kartları -->
+            <div class="exam-stats-row">
+              <div class="exam-stat-box">
+                <div class="stat-icon-mini icon-tyt">
+                  <i class="fa-solid fa-award"></i>
+                </div>
+                <div class="stat-meta">
+                  <span class="lbl">Ortalama TYT Neti</span>
+                  <span class="val text-tyt" id="coach-stat-tyt-avg">0.00</span>
+                </div>
+              </div>
+
+              <div class="exam-stat-box">
+                <div class="stat-icon-mini icon-ayt">
+                  <i class="fa-solid fa-bolt"></i>
+                </div>
+                <div class="stat-meta">
+                  <span class="lbl">Ortalama AYT Neti</span>
+                  <span class="val text-ayt" id="coach-stat-ayt-avg">0.00</span>
+                </div>
+              </div>
+
+              <div class="exam-stat-box">
+                <div class="stat-icon-mini icon-exams">
+                  <i class="fa-solid fa-file-signature"></i>
+                </div>
+                <div class="stat-meta">
+                  <span class="lbl">Kayıtlı Deneme</span>
+                  <span class="val" id="coach-stat-exam-count">0</span>
+                </div>
+              </div>
+
+              <div class="exam-stat-box">
+                <div class="stat-icon-mini icon-mistakes">
+                  <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div class="stat-meta">
+                  <span class="lbl">Kritik Yanlış Konu</span>
+                  <span class="val text-danger" id="coach-stat-mistake-count">0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Filtreler ve Arama Barı -->
+            <div class="exam-filter-bar">
+              <div class="filter-pills" id="coach-exam-type-filter">
+                <button class="filter-pill active" data-type="all" onclick="setCoachExamFilter('all')">Tüm Denemeler</button>
+                <button class="filter-pill pill-tyt" data-type="TYT" onclick="setCoachExamFilter('TYT')">TYT Denemeleri</button>
+                <button class="filter-pill pill-ayt" data-type="AYT" onclick="setCoachExamFilter('AYT')">AYT Denemeleri</button>
+              </div>
+              <div class="search-box-wrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="coach-exam-search" placeholder="Deneme adı veya yanlış konu ara..." oninput="handleCoachExamSearch()">
+              </div>
+            </div>
+
+            <!-- Analiz İki Kolonlu Grid: Sol (Konu Bazlı Analiz Özeti), Sağ (Deneme Kartları Listesi) -->
+            <div class="exam-dashboard-grid">
+              <!-- Sol Panel: Konu Bazlı Yanlış Yoğunluğu (Weak Points Aggregation) -->
+              <div class="exam-analytics-card">
+                <div class="card-header-flex">
+                  <div class="card-title">
+                    <i class="fa-solid fa-layer-group text-warning"></i>
+                    <span>En Çok Hata Yapılan Konular</span>
+                  </div>
+                  <span class="badge-count" id="coach-topic-summary-count">0 Konu</span>
+                </div>
+                <p class="card-sub-info">Tüm denemelerde öğrencinin en çok takıldığı konular ve hata sebepleri:</p>
+                
+                <div class="topic-mistakes-list" id="coach-topic-mistakes-summary">
+                  <!-- Dinamik olarak JS ile render edilecek -->
+                </div>
+              </div>
+
+              <!-- Sağ Panel: Deneme Karneleri ve Yanlış Listeleri -->
+              <div class="exam-cards-container">
+                <div class="card-header-flex">
+                  <div class="card-title">
+                    <i class="fa-solid fa-list-check text-primary"></i>
+                    <span>Deneme Karneleri & Sınav Detayları</span>
+                  </div>
+                </div>
+
+                <div class="exam-cards-list" id="coach-exam-cards-list">
+                  <!-- Dinamik olarak JS ile render edilecek -->
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SEÇENEK 3: TYT & AYT KONU TAKİP VE DOĞRU-YANLIŞ ANALİZ ÇİZELGESİ (ADMIN GÖRÜNÜMÜ) -->
+        <div id="coach-tab-content-topics" class="tab-content-pane hidden">
+          <div class="curriculum-container">
+            <!-- Üst Kontrol Barı -->
+            <div class="curriculum-section-header">
+              <div class="title-group">
+                <h3><i class="fa-solid fa-table-list text-primary"></i> TYT & AYT Konu Takip ve Doğru-Yanlış Analiz Çizelgesi</h3>
+                <span class="schedule-sub">Öğrencinin her ders için konu anlatımı izleme durumu, çözülen soru sayısı ve D-Y başarı analizi</span>
+              </div>
+              <div class="curriculum-header-actions">
+                <button class="btn btn-outline-secondary" onclick="printCurriculumSheet('coach')">
+                  <i class="fa-solid fa-print"></i> Çizelgeyi Yazdır / PDF
+                </button>
+                <button class="btn btn-primary" onclick="openAddCustomTopicModal()">
+                  <i class="fa-solid fa-plus"></i> Yeni Konu Ekle
+                </button>
+              </div>
+            </div>
+
+            <!-- 1. Genel İstatistik Kartları -->
+            <div class="curriculum-stats-grid">
+              <div class="curriculum-stat-card">
+                <div class="stat-icon-circle icon-total-topics">
+                  <i class="fa-solid fa-book-open"></i>
+                </div>
+                <div class="stat-content">
+                  <span class="c-stat-lbl">Toplam Müfredat Konusu</span>
+                  <span class="c-stat-val" id="coach-curriculum-total-topics">0</span>
+                  <span class="c-stat-sub" id="coach-curriculum-topics-sub">TYT & AYT Konuları</span>
+                </div>
+              </div>
+
+              <div class="curriculum-stat-card">
+                <div class="stat-icon-circle icon-watched-topics">
+                  <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div class="stat-content">
+                  <span class="c-stat-lbl">Konu Anlatımı Tamamlanan</span>
+                  <div class="val-with-pct">
+                    <span class="c-stat-val text-success" id="coach-curriculum-watched-count">0</span>
+                    <span class="c-stat-badge bg-success-light" id="coach-curriculum-watched-pct">%0</span>
+                  </div>
+                  <span class="c-stat-sub">İzlenen / Çalışılan Konular</span>
+                </div>
+              </div>
+
+              <div class="curriculum-stat-card">
+                <div class="stat-icon-circle icon-solved-questions">
+                  <i class="fa-solid fa-pen-nib"></i>
+                </div>
+                <div class="stat-content">
+                  <span class="c-stat-lbl">Toplam Çözülen Soru</span>
+                  <span class="c-stat-val text-warning" id="coach-curriculum-solved-q">0</span>
+                  <span class="c-stat-sub" id="coach-curriculum-avg-q-sub">Soru Dağılımı</span>
+                </div>
+              </div>
+
+              <div class="curriculum-stat-card">
+                <div class="stat-icon-circle icon-accuracy-rate">
+                  <i class="fa-solid fa-chart-pie"></i>
+                </div>
+                <div class="stat-content">
+                  <span class="c-stat-lbl">Genel Doğruluk (D-Y) Oranı</span>
+                  <div class="val-with-pct">
+                    <span class="c-stat-val text-primary" id="coach-curriculum-accuracy-pct">%0</span>
+                  </div>
+                  <span class="c-stat-sub" id="coach-curriculum-dy-counts">0 D / 0 Y</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Ders Bazında İlerleme Rozetleri / Progress Grid -->
+            <div class="subject-progress-section">
+              <div class="section-mini-header">
+                <h4><i class="fa-solid fa-layer-group"></i> Ders Bazında Müfredat İlerlemesi & Soru Dağılımı</h4>
+                <span class="sub-hint">Derse tıklayarak çizelgedeki konuları hızlıca filtreleyebilirsiniz:</span>
+              </div>
+              <div class="subject-progress-grid" id="coach-subject-progress-grid">
+                <!-- JS ile dinamik render edilecek -->
+              </div>
+            </div>
+
+            <!-- 3. Filtreler ve Arama -->
+            <div class="curriculum-filter-container">
+              <div class="filter-top-row">
+                <!-- Sınav Türü Butonları -->
+                <div class="filter-pills" id="coach-curriculum-exam-filter">
+                  <button class="filter-pill active" data-exam="all" onclick="setCoachCurriculumExamFilter('all')">Tüm Sınavlar</button>
+                  <button class="filter-pill pill-tyt" data-exam="TYT" onclick="setCoachCurriculumExamFilter('TYT')">TYT Konuları</button>
+                  <button class="filter-pill pill-ayt" data-exam="AYT" onclick="setCoachCurriculumExamFilter('AYT')">AYT Konuları</button>
+                </div>
+
+                <!-- Durum Filtresi -->
+                <div class="curriculum-status-filter">
+                  <select id="coach-curriculum-status-filter" onchange="handleCoachCurriculumFilterChange()">
+                    <option value="all">Tüm Durumlar (Tümü)</option>
+                    <option value="watched">✓ Konu Anlatımı İzlendi</option>
+                    <option value="not_watched">❌ Anlatım İzlenmedi</option>
+                    <option value="solved">📝 Soru Çözümü Yapıldı (>0)</option>
+                    <option value="not_solved">⭕ Henüz Soru Çözülmedi</option>
+                    <option value="low_accuracy">⚠️ Düşük Başarı / İnceleme Gereken (<%75)</option>
+                    <option value="high_accuracy">🌟 Yüksek Başarı (≥%85)</option>
+                  </select>
+                </div>
+
+                <!-- Arama Kutusu -->
+                <div class="search-box-wrapper search-wide">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input type="text" id="coach-curriculum-search" placeholder="Konu, alt başlık veya kaynak ara..." oninput="handleCoachCurriculumSearch()">
+                </div>
+              </div>
+
+              <!-- Ders Filtre Butonları -->
+              <div class="subject-pills-row" id="coach-curriculum-subject-pills">
+                <!-- JS ile render edilecek -->
+              </div>
+            </div>
+
+            <!-- 4. Çizelge Tablosu (Fiziksel Formun Modern Dijital Hali) -->
+            <div class="curriculum-table-card">
+              <div class="table-card-header">
+                <div class="header-left">
+                  <h4 id="coach-curriculum-table-title"><i class="fa-solid fa-table"></i> Konu Takip ve Doğru-Yanlış Çizelgesi</h4>
+                  <span class="badge-count" id="coach-curriculum-filtered-count">0 Konu</span>
+                </div>
+                <div class="header-tip">
+                  <i class="fa-solid fa-circle-info"></i>
+                  <span>"Konu Anlatımı" butonuna basarak izlenme durumunu hızlıca değiştirebilir, "Düzenle" ile soru ve D-Y adetlerini girebilirsiniz.</span>
+                </div>
+              </div>
+
+              <div class="curriculum-table-wrapper">
+                <table class="curriculum-table" id="coach-curriculum-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 45px;" class="text-center">No</th>
+                      <th style="width: 220px;">Ders & Konu</th>
+                      <th>Alt Başlıklar</th>
+                      <th style="width: 170px;" class="text-center">Konu Anlatımı ✓</th>
+                      <th style="width: 110px;" class="text-center">Soru Sayısı</th>
+                      <th style="width: 170px;" class="text-center">D - Y Analizi</th>
+                      <th style="width: 180px;">Koç Notu & Değerlendirme</th>
+                      <th style="width: 100px;" class="text-center no-print">İşlemler</th>
+                    </tr>
+                  </thead>
+                  <tbody id="coach-curriculum-tbody">
+                    <!-- Dinamik olarak JS ile render edilecek -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SEÇENEK 4: ÖĞRETMEN DERS & SEANS TAKVİMİ (ADMIN GÖRÜNÜMÜ) -->
+        <div id="coach-tab-content-calendar" class="tab-content-pane hidden">
+          <div class="teacher-calendar-container">
+            
+            <!-- Üst Kontrol & Filtre Barı -->
+            <div class="calendar-header-section">
+              <div class="calendar-title-group">
+                <h3><i class="fa-solid fa-calendar-days text-primary"></i> Öğretmen Özel Ders & Seans Takvimi</h3>
+                <span class="schedule-sub">Öğrencilerin haftalık/aylık ders saatleri, seans takibi ve aylık ders istatistikleri</span>
+              </div>
+
+              <div class="calendar-top-actions">
+                <!-- Öğrenci Filtresi -->
+                <div class="calendar-filter-box">
+                  <label for="calendar-student-filter"><i class="fa-solid fa-user"></i> Öğrenci:</label>
+                  <select id="calendar-student-filter" onchange="onCalendarStudentFilterChange(this.value)">
+                    <option value="all">Tüm Öğrenciler</option>
+                    <!-- Dinamik doldurulacak -->
+                  </select>
+                </div>
+
+                <!-- Durum Filtresi -->
+                <div class="calendar-filter-box">
+                  <label for="calendar-status-filter"><i class="fa-solid fa-circle-check"></i> Durum:</label>
+                  <select id="calendar-status-filter" onchange="onCalendarStatusFilterChange(this.value)">
+                    <option value="all">Tümü</option>
+                    <option value="completed">✅ Yapıldı</option>
+                    <option value="planned">⏳ Planlandı</option>
+                    <option value="cancelled">❌ İptal / Ertelendi</option>
+                  </select>
+                </div>
+
+                <button class="btn btn-primary" onclick="openAddLessonModal()">
+                  <i class="fa-solid fa-plus"></i> Yeni Ders Planla
+                </button>
+              </div>
+            </div>
+
+            <!-- 2. AYLIK DERS İSTATİSTİKLERİ VE ÖĞRENCİ KARTLARI -->
+            <div class="monthly-stats-section">
+              <div class="stats-section-title">
+                <i class="fa-solid fa-chart-pie text-primary"></i>
+                <span id="calendar-stats-month-title">Eylül 2026 - Öğrenci Bazlı Aylık Ders Sayıları</span>
+              </div>
+              <div class="monthly-stats-overview" id="calendar-monthly-stats-overview">
+                <!-- Dinamik olarak JS ile render edilecek -->
+              </div>
+            </div>
+
+            <!-- 3. TAKVİM NAVİGASYONU & AY GÖRÜNÜMÜ -->
+            <div class="calendar-card">
+              <div class="calendar-nav-toolbar">
+                <div class="calendar-nav-left">
+                  <button class="btn-cal-nav" onclick="changeCalendarMonth(-1)" title="Önceki Ay">
+                    <i class="fa-solid fa-chevron-left"></i>
+                  </button>
+                  <h2 class="current-month-heading" id="calendar-current-month-label">Eylül 2026</h2>
+                  <button class="btn-cal-nav" onclick="changeCalendarMonth(1)" title="Sonraki Ay">
+                    <i class="fa-solid fa-chevron-right"></i>
+                  </button>
+                  <button class="btn btn-xs btn-outline-primary btn-cal-today" onclick="setCalendarToday()">
+                    Bugün
+                  </button>
+                </div>
+
+                <div class="calendar-legend">
+                  <span class="legend-item"><span class="legend-dot status-completed"></span> Yapıldı</span>
+                  <span class="legend-item"><span class="legend-dot status-planned"></span> Planlandı</span>
+                  <span class="legend-item"><span class="legend-dot status-cancelled"></span> İptal / Ertelendi</span>
+                </div>
+              </div>
+
+              <!-- Gün Başlıkları (Pzt, Sal, Çar, Per, Cum, Cmt, Paz) -->
+              <div class="calendar-weekdays-grid">
+                <div>Pazartesi</div>
+                <div>Salı</div>
+                <div>Çarşamba</div>
+                <div>Perşembe</div>
+                <div>Cuma</div>
+                <div>Cumartesi</div>
+                <div>Pazar</div>
+              </div>
+
+              <!-- Gün Hücreleri Grid -->
+              <div class="calendar-days-grid" id="calendar-days-grid">
+                <!-- 35 veya 42 gün hücresi JS ile oluşturulacak -->
+              </div>
+            </div>
+
+            <!-- 4. BU AYIN DETAYLI DERS LİSTESİ TABLOSU -->
+            <div class="monthly-lessons-list-card">
+              <div class="lessons-list-header">
+                <div class="title-flex">
+                  <i class="fa-solid fa-list-check text-primary"></i>
+                  <span id="calendar-list-heading">Bu Ayki Dersler Listesi</span>
+                </div>
+                <span class="badge-count" id="calendar-list-count">0 Ders</span>
+              </div>
+              <div class="lessons-table-wrapper" id="calendar-lessons-table-wrapper">
+                <!-- Dinamik tablo JS ile doldurulacak -->
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 3. ÖĞRENCİ PANELİ -->
+    <section id="student-dashboard" class="dashboard-section hidden">
+      <!-- Öğrenci Karşılama Banner -->
+      <div class="dashboard-banner student-banner">
+        <div class="banner-text">
+          <h2><i class="fa-solid fa-sparkles"></i> Merhaba, <span id="student-welcome-name">Öğrenci</span>!</h2>
+          <p>Haftalık koçluk programın, hedeflerin ve deneme sınavı konu analizlerin aşağıda listelenmiştir.
+          </p>
+        </div>
+        <div class="banner-badge-box">
+          <div class="streak-badge">
+            <i class="fa-solid fa-fire"></i>
+            <div>
+              <span class="streak-title">Haftalık İlerleme</span>
+              <span class="streak-val" id="student-banner-progress">%0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Öğrenci Koç Notu Kartı -->
+      <div class="student-coach-message-card" id="student-coach-message-box">
+        <div class="message-icon">
+          <i class="fa-solid fa-quote-left"></i>
+        </div>
+        <div class="message-body">
+          <h4>Koçunun Bu Haftaki Mesajı & Hedefi:</h4>
+          <p id="student-coach-note-text">Henüz bu hafta için bir not girilmemiş.</p>
+        </div>
+      </div>
+
+      <!-- ÖĞRENCİ PANELİ SEKMELERİ (HAFTALIK PROGRAM, DENEME ANALİZİ & KONU TAKİP ÇİZELGESİ) -->
+      <div class="dashboard-tabs-nav">
+        <button class="dash-tab-btn active" id="student-tab-btn-schedule" onclick="switchStudentTab('schedule')">
+          <i class="fa-solid fa-calendar-days"></i> Haftalık Ders Programım
+        </button>
+        <button class="dash-tab-btn" id="student-tab-btn-exam" onclick="switchStudentTab('exam-analysis')">
+          <i class="fa-solid fa-chart-pie"></i> Deneme Sınavlarım & Yanlış Analizim
+          <span class="tab-badge" id="student-tab-exam-count">0</span>
+        </button>
+        <button class="dash-tab-btn" id="student-tab-btn-topics" onclick="switchStudentTab('topics-tracker')">
+          <i class="fa-solid fa-table-list"></i> TYT & AYT Konu Takip Çizelgem
+          <span class="tab-badge badge-success" id="student-tab-topic-count">0/0</span>
+        </button>
+      </div>
+
+      <!-- SEÇENEK 1: ÖĞRENCİ HAFTALIK PROGRAMI -->
+      <div id="student-tab-content-schedule" class="tab-content-pane">
+        <!-- Öğrenci İlerleme Çubuğu -->
+        <div class="student-metrics-bar">
+          <div class="metric-item">
+            <span class="metric-label">Toplam Görev</span>
+            <span class="metric-val" id="st-metric-total-tasks">0</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Tamamlanan Görev</span>
+            <span class="metric-val text-success" id="st-metric-completed-tasks">0</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Çözülen Soru</span>
+            <span class="metric-val text-warning" id="st-metric-solved-q">0 / 0</span>
+          </div>
+          <div class="metric-item progress-wide">
+            <div class="progress-labels">
+              <span class="metric-label">Genel Başarı</span>
+              <span class="progress-pct" id="st-metric-pct">%0</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" id="st-metric-progress-fill" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Öğrenci Haftalık Programı -->
+        <div class="weekly-schedule-container">
+          <div class="schedule-header">
+            <div class="title-group">
+              <h3><i class="fa-solid fa-calendar-days"></i> Haftalık Ders & Görev Programım</h3>
+              <span class="schedule-sub">Görevlerini tamamladıkça kutucukları işaretleyebilir ve çözdüğün soru sayısını
+                güncelleyebilirsin.</span>
+            </div>
+            <!-- Gün Filtresi (Mobil İçin Kolaylık) -->
+            <div class="day-filter-tabs" id="student-day-tabs">
+              <button class="day-tab active" data-day="all">Tüm Hafta</button>
+              <button class="day-tab" data-day="Pazartesi">Pzt</button>
+              <button class="day-tab" data-day="Salı">Sal</button>
+              <button class="day-tab" data-day="Çarşamba">Çar</button>
+              <button class="day-tab" data-day="Perşembe">Per</button>
+              <button class="day-tab" data-day="Cuma">Cum</button>
+              <button class="day-tab" data-day="Cumartesi">Cmt</button>
+              <button class="day-tab" data-day="Pazar">Paz</button>
+            </div>
+          </div>
+
+          <!-- Öğrenci Haftalık Grid -->
+          <div class="weekly-grid student-grid" id="student-weekly-grid">
+            <!-- 7 Gün kartları ve interaktif tamamlama toggle'ları JS ile render edilecek -->
+          </div>
+        </div>
+      </div>
+
+      <!-- SEÇENEK 2: ÖĞRENCİ DENEME SINAVI VE YANLIŞ ANALİZİ -->
+      <div id="student-tab-content-exam" class="tab-content-pane hidden">
+        <div class="exam-analysis-container">
+          <!-- Öğrenci Deneme Üst Banner -->
+          <div class="student-exam-hero">
+            <div class="hero-left">
+              <h3><i class="fa-solid fa-bullseye-arrow"></i> Deneme Sınavı Performansım & Yanlış Defterim</h3>
+              <p>TYT ve AYT denemelerinde yaptığın yanlışların konu dökümü, koç hedeflerin ve net ilerleme grafiğin.</p>
+            </div>
+          </div>
+
+          <!-- 1. ÖĞRENCİ TYT & AYT NET HEDEF KARTLARI -->
+          <div class="targets-comparison-grid" id="student-targets-container">
+            <!-- Dinamik olarak JS ile render edilecek -->
+          </div>
+
+          <!-- 2. ÖĞRENCİ DENEME İLERLEYİŞ & TREND GRAFİĞİ -->
+          <div class="exam-chart-card">
+            <div class="chart-header-flex">
+              <div class="chart-title-box">
+                <div class="card-title">
+                  <i class="fa-solid fa-chart-line text-primary"></i>
+                  <span>Net Gelişim & Hedef Grafiğim</span>
+                </div>
+                <span class="card-sub-info">Girdiğin denemelerdeki net artışın ve koçunun belirlediği hedefe yakınlığın</span>
+              </div>
+              <div class="chart-controls">
+                <div class="filter-pills" id="student-chart-filter-pills">
+                  <button class="filter-pill active" data-chart="all" onclick="setStudentChartFilter('all')">Tüm Trend</button>
+                  <button class="filter-pill pill-tyt" data-chart="TYT" onclick="setStudentChartFilter('TYT')">Sadece TYT</button>
+                  <button class="filter-pill pill-ayt" data-chart="AYT" onclick="setStudentChartFilter('AYT')">Sadece AYT</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- SVG Grafik Alanı -->
+            <div class="chart-svg-wrapper" id="student-progress-chart-container">
+              <!-- JS tarafından SVG olarak çizilecek -->
+            </div>
+          </div>
+
+          <!-- Öğrenci Deneme İstatistik Kartları -->
+          <div class="exam-stats-row">
+            <div class="exam-stat-box">
+              <div class="stat-icon-mini icon-tyt">
+                <i class="fa-solid fa-graduation-cap"></i>
+              </div>
+              <div class="stat-meta">
+                <span class="lbl">Ortalama TYT Netim</span>
+                <span class="val text-tyt" id="st-stat-tyt-avg">0.00</span>
+              </div>
+            </div>
+
+            <div class="exam-stat-box">
+              <div class="stat-icon-mini icon-ayt">
+                <i class="fa-solid fa-rocket"></i>
+              </div>
+              <div class="stat-meta">
+                <span class="lbl">Ortalama AYT Netim</span>
+                <span class="val text-ayt" id="st-stat-ayt-avg">0.00</span>
+              </div>
+            </div>
+
+            <div class="exam-stat-box">
+              <div class="stat-icon-mini icon-exams">
+                <i class="fa-solid fa-clipboard-check"></i>
+              </div>
+              <div class="stat-meta">
+                <span class="lbl">Girdiğim Deneme</span>
+                <span class="val" id="st-stat-exam-count">0</span>
+              </div>
+            </div>
+
+            <div class="exam-stat-box">
+              <div class="stat-icon-mini icon-mistakes">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+              <div class="stat-meta">
+                <span class="lbl">Telafi Edilen Yanlış</span>
+                <span class="val text-success" id="st-stat-resolved-pct">%0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filtreler -->
+          <div class="exam-filter-bar">
+            <div class="filter-pills" id="st-exam-type-filter">
+              <button class="filter-pill active" data-type="all" onclick="setStudentExamFilter('all')">Tüm Denemelerim</button>
+              <button class="filter-pill pill-tyt" data-type="TYT" onclick="setStudentExamFilter('TYT')">TYT Denemeleri</button>
+              <button class="filter-pill pill-ayt" data-type="AYT" onclick="setStudentExamFilter('AYT')">AYT Denemeleri</button>
+            </div>
+            <div class="search-box-wrapper">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="student-exam-search" placeholder="Konu veya deneme adı ara..." oninput="handleStudentExamSearch()">
+            </div>
+          </div>
+
+          <!-- Öğrenci Analiz İki Kolonlu Grid -->
+          <div class="exam-dashboard-grid">
+            <!-- Sol Panel: Öncelikli Tekrar Edilecek Konular Haritası -->
+            <div class="exam-analytics-card">
+              <div class="card-header-flex">
+                <div class="card-title">
+                  <i class="fa-solid fa-fire text-danger"></i>
+                  <span>Öncelikli Tekrar Listem (Kritik Konular)</span>
+                </div>
+                <span class="badge-count" id="st-topic-summary-count">0 Konu</span>
+              </div>
+              <p class="card-sub-info">Denemelerde en sık hata yaptığın konular. Koçunun tavsiyeleriyle bu konuları kapatmaya odaklan!</p>
+              
+              <div class="topic-mistakes-list" id="student-topic-mistakes-summary">
+                <!-- JS ile doldurulacak -->
+              </div>
+            </div>
+
+            <!-- Sağ Panel: Deneme Listesi ve Yanlış Kutucukları -->
+            <div class="exam-cards-container">
+              <div class="card-header-flex">
+                <div class="card-title">
+                  <i class="fa-solid fa-book-open-reader text-primary"></i>
+                  <span>Deneme Sınavlarım ve Yanlışlarım</span>
+                </div>
+              </div>
+
+              <div class="exam-cards-list" id="student-exam-cards-list">
+                <!-- JS ile doldurulacak -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SEÇENEK 3: ÖĞRENCİ TYT & AYT KONU TAKİP VE DOĞRU-YANLIŞ ÇİZELGESİ -->
+      <div id="student-tab-content-topics" class="tab-content-pane hidden">
+        <div class="curriculum-container">
+          <!-- Öğrenci Konu Takip Üst Banner -->
+          <div class="student-exam-hero">
+            <div class="hero-left">
+              <h3><i class="fa-solid fa-table-list text-primary"></i> TYT & AYT Konu Takip ve Başarı Çizelgem</h3>
+              <p>Müfredattaki tüm konuların video izleme durumu, çözdüğün soru sayısı, Doğru-Yanlış analizin ve koçunun bıraktığı tavsiye notları.</p>
+            </div>
+            <div class="hero-actions">
+              <button class="btn btn-outline-white btn-sm" onclick="printCurriculumSheet('student')">
+                <i class="fa-solid fa-print"></i> Çizelgemi Yazdır / PDF
+              </button>
+            </div>
+          </div>
+
+          <!-- Öğrenci İstatistik Kartları -->
+          <div class="curriculum-stats-grid">
+            <div class="curriculum-stat-card">
+              <div class="stat-icon-circle icon-total-topics">
+                <i class="fa-solid fa-book-open"></i>
+              </div>
+              <div class="stat-content">
+                <span class="c-stat-lbl">Toplam Müfredat Konusu</span>
+                <span class="c-stat-val" id="student-curriculum-total-topics">0</span>
+                <span class="c-stat-sub">TYT & AYT Konuları</span>
+              </div>
+            </div>
+
+            <div class="curriculum-stat-card">
+              <div class="stat-icon-circle icon-watched-topics">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+              <div class="stat-content">
+                <span class="c-stat-lbl">İzlediğim Konu Anlatımı</span>
+                <div class="val-with-pct">
+                  <span class="c-stat-val text-success" id="student-curriculum-watched-count">0</span>
+                  <span class="c-stat-badge bg-success-light" id="student-curriculum-watched-pct">%0</span>
+                </div>
+                <span class="c-stat-sub">Tamamlanan Anlatımlar</span>
+              </div>
+            </div>
+
+            <div class="curriculum-stat-card">
+              <div class="stat-icon-circle icon-solved-questions">
+                <i class="fa-solid fa-pen-nib"></i>
+              </div>
+              <div class="stat-content">
+                <span class="c-stat-lbl">Çözdüğüm Toplam Soru</span>
+                <span class="c-stat-val text-warning" id="student-curriculum-solved-q">0</span>
+                <span class="c-stat-sub">Tüm Dersler Toplamı</span>
+              </div>
+            </div>
+
+            <div class="curriculum-stat-card">
+              <div class="stat-icon-circle icon-accuracy-rate">
+                <i class="fa-solid fa-chart-pie"></i>
+              </div>
+              <div class="stat-content">
+                <span class="c-stat-lbl">Genel Doğruluk Oranım</span>
+                <div class="val-with-pct">
+                  <span class="c-stat-val text-primary" id="student-curriculum-accuracy-pct">%0</span>
+                </div>
+                <span class="c-stat-sub" id="student-curriculum-dy-counts">0 D / 0 Y</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ders Bazında İlerleme Rozetleri Grid -->
+          <div class="subject-progress-section">
+            <div class="section-mini-header">
+              <h4><i class="fa-solid fa-layer-group"></i> Derslerime Göre İlerleme Durumum</h4>
+              <span class="sub-hint">İlgili derse tıklayarak çizelgeni filtreleyebilirsin:</span>
+            </div>
+            <div class="subject-progress-grid" id="student-subject-progress-grid">
+              <!-- JS ile dinamik render edilecek -->
+            </div>
+          </div>
+
+          <!-- Filtreler ve Arama -->
+          <div class="curriculum-filter-container">
+            <div class="filter-top-row">
+              <!-- Sınav Türü Butonları -->
+              <div class="filter-pills" id="student-curriculum-exam-filter">
+                <button class="filter-pill active" data-exam="all" onclick="setStudentCurriculumExamFilter('all')">Tüm Sınavlar</button>
+                <button class="filter-pill pill-tyt" data-exam="TYT" onclick="setStudentCurriculumExamFilter('TYT')">TYT Konuları</button>
+                <button class="filter-pill pill-ayt" data-exam="AYT" onclick="setStudentCurriculumExamFilter('AYT')">AYT Konuları</button>
+              </div>
+
+              <!-- Durum Filtresi -->
+              <div class="curriculum-status-filter">
+                <select id="student-curriculum-status-filter" onchange="handleStudentCurriculumFilterChange()">
+                  <option value="all">Tüm Durumlar (Tümü)</option>
+                  <option value="watched">✓ Konu Anlatımı İzlendi</option>
+                  <option value="not_watched">❌ Anlatım İzlenmedi</option>
+                  <option value="solved">📝 Soru Çözümü Yapıldı (>0)</option>
+                  <option value="not_solved">⭕ Henüz Soru Çözülmedi</option>
+                  <option value="low_accuracy">⚠️ Tekrar Gereken Konular (<%75)</option>
+                  <option value="high_accuracy">🌟 Tamam / Başarılı (≥%85)</option>
+                </select>
+              </div>
+
+              <!-- Arama Kutusu -->
+              <div class="search-box-wrapper search-wide">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="student-curriculum-search" placeholder="Konu, alt başlık veya kaynak ara..." oninput="handleStudentCurriculumSearch()">
+              </div>
+            </div>
+
+            <!-- Ders Filtre Hapları -->
+            <div class="subject-pills-row" id="student-curriculum-subject-pills">
+              <!-- JS ile render edilecek -->
+            </div>
+          </div>
+
+          <!-- Çizelge Tablosu (Öğrenci Görünümü) -->
+          <div class="curriculum-table-card">
+            <div class="table-card-header">
+              <div class="header-left">
+                <h4 id="student-curriculum-table-title"><i class="fa-solid fa-table"></i> Konu Takip Çizelgem</h4>
+                <span class="badge-count" id="student-curriculum-filtered-count">0 Konu</span>
+              </div>
+              <div class="header-tip">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>"Çalışmamı Güncelle" butonuna tıklayarak izlediğin videoları ve çözdüğün D-Y sayılarını kaydedebilirsin.</span>
+              </div>
+            </div>
+
+            <div class="curriculum-table-wrapper">
+              <table class="curriculum-table" id="student-curriculum-table">
+                <thead>
+                  <tr>
+                    <th style="width: 45px;" class="text-center">No</th>
+                    <th style="width: 220px;">Ders & Konu</th>
+                    <th>Alt Başlıklar</th>
+                    <th style="width: 170px;" class="text-center">Konu Anlatımı ✓</th>
+                    <th style="width: 110px;" class="text-center">Soru Sayısı</th>
+                    <th style="width: 170px;" class="text-center">D - Y Analizi</th>
+                    <th style="width: 190px;">Koçumun Notu</th>
+                    <th style="width: 110px;" class="text-center no-print">Güncelle</th>
+                  </tr>
+                </thead>
+                <tbody id="student-curriculum-tbody">
+                  <!-- Dinamik olarak JS ile render edilecek -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== MODAL PENCERELERİ ==================== -->
+
+  <!-- 1. YENİ GÖREV EKLEME / DÜZENLEME MODALI -->
+  <div id="modal-task" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-task-title"><i class="fa-solid fa-calendar-plus"></i> Yeni Görev Ekle</h3>
+        <button class="modal-close" onclick="closeModal('modal-task')">&times;</button>
+      </div>
+
+      <form id="task-form" class="modal-form">
+        <input type="hidden" id="task-edit-id" value="">
+        <input type="hidden" id="task-student-id" value="">
+
+        <!-- ÇOKLU GÜN SEÇİMİ -->
+        <div class="form-group task-day-select-group">
+          <div class="day-select-header">
+            <label><i class="fa-regular fa-calendar-check"></i> Uygulanacak Günler <span class="badge-subtle-hint">(Çoklu Seçilebilir)</span></label>
+            <div class="day-quick-presets">
+              <button type="button" class="btn-preset-chip" onclick="setTaskDaysPreset('all')">Tüm Hafta</button>
+              <button type="button" class="btn-preset-chip" onclick="setTaskDaysPreset('weekdays')">Hafta İçi</button>
+              <button type="button" class="btn-preset-chip" onclick="setTaskDaysPreset('weekend')">Hafta Sonu</button>
+              <button type="button" class="btn-preset-chip" onclick="setTaskDaysPreset('clear')">Temizle</button>
+            </div>
+          </div>
+          <div class="day-selection-pills" id="task-day-checkbox-group">
+            <label class="day-pill-checkbox" title="Pazartesi">
+              <input type="checkbox" name="task_days" value="Pazartesi" class="task-day-cb" onchange="updateTaskDaysSummary()">
+              <span class="day-pill-label">Pzt</span>
+            </label>
+            <label class="day-pill-checkbox" title="Salı">
+              <input type="checkbox" name="task_days" value="Salı" class="task-day-cb" onchange="updateTaskDaysSummary()">
+              <span class="day-pill-label">Sal</span>
+            </label>
+            <label class="day-pill-checkbox" title="Çarşamba">
+              <input type="checkbox" name="task_days" value="Çarşamba" class="task-day-cb" onchange="updateTaskDaysSummary()">
+              <span class="day-pill-label">Çar</span>
+            </label>
+            <label class="day-pill-checkbox" title="Perşembe">
+              <input type="checkbox" name="task_days" value="Perşembe" class="task-day-cb" onchange="updateTaskDaysSummary()">
+              <span class="day-pill-label">Per</span>
+            </label>
+            <label class="day-pill-checkbox" title="Cuma">
+              <input type="checkbox" name="task_days" value="Cuma" class="task-day-cb" onchange="updateTaskDaysSummary()">
+              <span class="day-pill-label">Cum</span>
+            </label>
+            <label class="day-pill-checkbox" title="Cumartesi">
+              <input type="checkbox" name="task_days" value="Cumartesi" class="task-day-cb" onchange="updateTaskDaysSummary()">
+              <span class="day-pill-label">Cmt</span>
+            </label>
+            <label class="day-pill-checkbox" title="Pazar">
+              <input type="checkbox" name="task_days" value="Pazar" class="task-day-cb" onchange="updateTaskDaysSummary()">
+              <span class="day-pill-label">Paz</span>
+            </label>
+          </div>
+          <div class="day-selection-summary" id="task-days-summary">
+            <i class="fa-solid fa-circle-info"></i> Lütfen en az bir gün seçin.
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="task-subject"><i class="fa-solid fa-book"></i> Ders</label>
+            <select id="task-subject" required>
+              <option value="Matematik">Matematik</option>
+              <option value="Geometri">Geometri</option>
+              <option value="Fizik">Fizik</option>
+              <option value="Kimya">Kimya</option>
+              <option value="Biyoloji">Biyoloji</option>
+              <option value="Türkçe">Türkçe / Edebiyat</option>
+              <option value="Tarih">Tarih</option>
+              <option value="Coğrafya">Coğrafya</option>
+              <option value="Felsefe/Din">Felsefe / Din</option>
+              <option value="Paragraf">Paragraf Rutini</option>
+              <option value="Deneme Sınavı">Deneme Sınavı</option>
+              <option value="Diğer">Diğer / Etüt</option>
+            </select>
+          </div>
+
+          <div class="form-group col-6">
+            <label for="task-duration"><i class="fa-regular fa-clock"></i> Planlanan Süre</label>
+            <input type="text" id="task-duration" placeholder="Örn: 90 dk veya 2 Etüt" value="90 dk">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-8">
+            <label for="task-topic"><i class="fa-solid fa-heading"></i> Konu / Çalışma Başlığı</label>
+            <input type="text" id="task-topic" placeholder="Örn: Paragraf Günlük 20 Soru / Fonksiyonlar" required>
+          </div>
+
+          <div class="form-group col-4">
+            <label for="task-target-q"><i class="fa-solid fa-bullseye"></i> Hedef Soru</label>
+            <input type="number" id="task-target-q" min="0" placeholder="Örn: 40" value="40">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="task-description"><i class="fa-solid fa-align-left"></i> Açıklama & Kaynak (Opsiyonel)</label>
+          <textarea id="task-description" rows="2"
+            placeholder="Örn: 3D Soru Bankası Test 4-5-6 çözülecek, yanlışlara dönülecek..."></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-task')">İptal</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fa-solid fa-check"></i> Görevi Kaydet
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. YENİ ÖĞRENCİ EKLEME MODALI -->
+  <div id="modal-student" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-user-plus"></i> Yeni Öğrenci Ekle</h3>
+        <button class="modal-close" onclick="closeModal('modal-student')">&times;</button>
+      </div>
+
+      <form id="student-form" class="modal-form">
+        <div class="form-group">
+          <label for="new-student-fullname"><i class="fa-solid fa-signature"></i> Öğrenci Adı Soyadı</label>
+          <input type="text" id="new-student-fullname" placeholder="Örn: Elif Demir" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="new-student-username"><i class="fa-solid fa-user"></i> Kullanıcı Adı</label>
+            <input type="text" id="new-student-username" placeholder="Örn: elif" required autocomplete="off">
+          </div>
+
+          <div class="form-group col-6">
+            <label for="new-student-password"><i class="fa-solid fa-lock"></i> Giriş Şifresi</label>
+            <input type="text" id="new-student-password" placeholder="Örn: 1234" required autocomplete="off"
+              value="1234">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="new-student-target"><i class="fa-solid fa-graduation-cap"></i> Hedef Sınav / Alan</label>
+          <select id="new-student-target">
+            <option value="YKS Sayısal (MF)">YKS Sayısal (MF)</option>
+            <option value="YKS Eşit Ağırlık (TM)">YKS Eşit Ağırlık (TM)</option>
+            <option value="YKS Sözel">YKS Sözel</option>
+            <option value="YKS Dil (YDT)">YKS Dil (YDT)</option>
+            <option value="LGS Hazırlık">LGS Hazırlık</option>
+            <option value="Okul Dersleri & Ara Sınıf">Okul Dersleri & Ara Sınıf</option>
+            <option value="Genel Koçluk">Genel Koçluk</option>
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-student')">İptal</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fa-solid fa-user-check"></i> Öğrenciyi Oluştur
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. ÖĞRENCİ GÖREV TAMAMLAMA VE GERİ BİLDİRİM MODALI (ÖĞRENCİ İÇİN) -->
+  <div id="modal-complete-task" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-circle-check text-success"></i> Görevi Tamamla & Güncelle</h3>
+        <button class="modal-close" onclick="closeModal('modal-complete-task')">&times;</button>
+      </div>
+
+      <form id="complete-task-form" class="modal-form">
+        <input type="hidden" id="complete-task-id" value="">
+
+        <div class="task-info-preview" id="complete-task-preview">
+          <!-- Görev başlığı ve hedefi JS ile doldurulacak -->
+        </div>
+
+        <div class="form-group">
+          <label for="complete-solved-q"><i class="fa-solid fa-pen-nib"></i> Gerçekte Çözdüğün Soru Sayısı</label>
+          <input type="number" id="complete-solved-q" min="0" required>
+        </div>
+
+        <div class="form-group">
+          <label for="complete-notes"><i class="fa-regular fa-comment-dots"></i> Koçuna Notun / Yapamadığın Noktalar
+            (Opsiyonel)</label>
+          <textarea id="complete-notes" rows="2"
+            placeholder="Örn: Konuyu anladım ama son 5 test sorusunda zorlandım, bir dahaki derste bakalım..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-custom">
+            <input type="checkbox" id="complete-is-done" checked>
+            <span>Bu görevi <b>Tamamlandı</b> olarak işaretle</span>
+          </label>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-complete-task')">Kapat</button>
+          <button type="submit" class="btn btn-success">
+            <i class="fa-solid fa-check-double"></i> Kaydet ve İlerlememi Güncelle
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. HAFTALIK DENEME SINAVI VE YANLIŞ KONU EKLEME / DÜZENLEME MODALI (ADMIN / KOÇ) -->
+  <div id="modal-mock-exam" class="modal-backdrop hidden">
+    <div class="modal-card modal-card-large">
+      <div class="modal-header">
+        <h3 id="modal-exam-title"><i class="fa-solid fa-file-pen"></i> Deneme Sınavı & Yanlış Analizi</h3>
+        <button class="modal-close" onclick="closeModal('modal-mock-exam')">&times;</button>
+      </div>
+
+      <form id="mock-exam-form" class="modal-form">
+        <input type="hidden" id="exam-edit-id" value="">
+        <input type="hidden" id="exam-student-id" value="">
+
+        <!-- Sınav Temel Bilgileri -->
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="exam-title-input"><i class="fa-solid fa-tag"></i> Deneme Sınavı Adı</label>
+            <input type="text" id="exam-title-input" placeholder="Örn: Özdebir Türkiye Geneli TYT-2" required>
+          </div>
+
+          <div class="form-group col-3">
+            <label for="exam-type-select"><i class="fa-solid fa-graduation-cap"></i> Sınav Türü</label>
+            <select id="exam-type-select" required onchange="handleExamTypeChange(this.value)">
+              <option value="TYT">TYT (Temel Yeterlilik)</option>
+              <option value="AYT">AYT (Alan Yeterlilik)</option>
+              <option value="LGS">LGS</option>
+              <option value="GENEL">Genel Deneme</option>
+            </select>
+          </div>
+
+          <div class="form-group col-3">
+            <label for="exam-date-input"><i class="fa-regular fa-calendar"></i> Sınav Tarihi</label>
+            <input type="date" id="exam-date-input" required>
+          </div>
+        </div>
+
+        <!-- Ders Bazlı Doğru / Yanlış / Boş / Net Tablosu -->
+        <div class="form-section-card">
+          <div class="form-section-title">
+            <i class="fa-solid fa-calculator"></i>
+            <span>Ders Bazlı Soru Dağılımı ve Netler</span>
+            <span class="total-net-badge">Toplam Net: <b id="exam-total-net-preview">0.00</b></span>
+          </div>
+
+          <div class="exam-scores-table-wrapper">
+            <table class="exam-scores-table">
+              <thead>
+                <tr>
+                  <th>Ders</th>
+                  <th style="width: 80px;">Doğru</th>
+                  <th style="width: 80px;">Yanlış</th>
+                  <th style="width: 80px;">Boş</th>
+                  <th style="width: 90px;">Net</th>
+                </tr>
+              </thead>
+              <tbody id="exam-subjects-tbody">
+                <!-- Dinamik olarak TYT / AYT dersleri doldurulacak -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Yanlış Yapılan Konular (Topic Breakdown Editor) -->
+        <div class="form-section-card">
+          <div class="form-section-title between">
+            <div class="title-left">
+              <i class="fa-solid fa-list-ol text-warning"></i>
+              <span>Yanlış Yapılan Konular ve Hata Nedenleri</span>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addMistakeTopicRow()">
+              <i class="fa-solid fa-plus"></i> Yanlış Konu Ekle
+            </button>
+          </div>
+          <p class="section-sub-desc">Öğrencinin bu denemede fire verdiği konuları, hata adedini ve hata sebebini girin:</p>
+
+          <div class="mistake-topics-editor" id="mistake-topics-container">
+            <!-- Dinamik satırlar eklenecek -->
+          </div>
+        </div>
+
+        <!-- Koçun Değerlendirme & Tavsiye Notu -->
+        <div class="form-group">
+          <label for="exam-coach-feedback"><i class="fa-solid fa-comment-medical"></i> Koçun Bu Deneme İçin Özel Değerlendirmesi & Telafi Tavsiyesi</label>
+          <textarea id="exam-coach-feedback" rows="2"
+            placeholder="Örn: Geometride çember ve analitik konularına acil dönüş yapmalıyız. Matematikte işlem hatası sayısı fazla, odaklanarak çözelim..."></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-mock-exam')">İptal</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fa-solid fa-floppy-disk"></i> Deneme Analizini Kaydet
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. TYT VE AYT DENEME NET HEDEFLERİ DÜZENLEME MODALI (KOÇ / ADMIN) -->
+  <div id="modal-net-targets" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-bullseye text-primary"></i> Deneme Net Hedeflerini Belirle</h3>
+        <button class="modal-close" onclick="closeModal('modal-net-targets')">&times;</button>
+      </div>
+
+      <form id="net-targets-form" class="modal-form">
+        <input type="hidden" id="target-student-id" value="">
+
+        <div class="student-target-badge-info">
+          <i class="fa-solid fa-user-graduate"></i>
+          <span>Öğrenci: <b id="target-student-name-preview">-</b></span>
+        </div>
+        <p class="section-sub-desc">Öğrenci için ulaşılması gereken TYT ve AYT net hedeflerini belirleyin. Bu hedefler analiz kartlarında ve gelişim grafiklerinde referans olarak kullanılır.</p>
+
+        <div class="form-row" style="margin-top: 15px;">
+          <div class="form-group col-6">
+            <label for="target-tyt-input" class="label-tyt">
+              <i class="fa-solid fa-graduation-cap"></i> Hedef TYT Neti
+            </label>
+            <div class="input-with-suffix">
+              <input type="number" id="target-tyt-input" step="0.25" min="0" max="120" placeholder="Örn: 105.00" required>
+              <span class="suffix-tag">/ 120</span>
+            </div>
+          </div>
+
+          <div class="form-group col-6">
+            <label for="target-ayt-input" class="label-ayt">
+              <i class="fa-solid fa-rocket"></i> Hedef AYT Neti
+            </label>
+            <div class="input-with-suffix">
+              <input type="number" id="target-ayt-input" step="0.25" min="0" max="80" placeholder="Örn: 75.00" required>
+              <span class="suffix-tag">/ 80</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="target-modal-tip">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>Hedefleri güncellediğinizde öğrencinin hedef yüzdesi, kalan net farkı ve gelişim grafiğindeki hedef çizgisi anında güncellenecektir.</span>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-net-targets')">İptal</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fa-solid fa-check"></i> Hedefleri Kaydet
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 6. KONU TAKİP ÇİZELGESİ KONU DÜZENLEME MODALI (KOÇ / ADMIN) -->
+  <div id="modal-topic-edit" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-topic-edit-title"><i class="fa-solid fa-pen-to-square text-primary"></i> Konu Takip Bilgilerini Düzenle</h3>
+        <button class="modal-close" onclick="closeModal('modal-topic-edit')">&times;</button>
+      </div>
+
+      <form id="topic-edit-form" class="modal-form">
+        <input type="hidden" id="topic-edit-student-id" value="">
+        <input type="hidden" id="topic-edit-topic-id" value="">
+
+        <div class="topic-modal-subject-banner" id="topic-modal-banner">
+          <span class="subject-badge" id="topic-modal-subject-badge">Türkçe</span>
+          <h4 id="topic-modal-topic-name">Sözcükte ve Söz Öbeğinde Anlam</h4>
+        </div>
+
+        <!-- Konu Anlatımı Bölümü -->
+        <div class="form-section-card">
+          <div class="form-section-title">
+            <i class="fa-solid fa-video text-primary"></i>
+            <span>Konu Anlatımı & Video Takibi</span>
+          </div>
+          <div class="form-row" style="align-items: center;">
+            <div class="form-group col-5">
+              <label class="checkbox-custom" style="margin-top: 5px;">
+                <input type="checkbox" id="topic-edit-watched">
+                <span><b>Konu Anlatımı İzlendi / Çalışıldı (✓)</b></span>
+              </label>
+            </div>
+            <div class="form-group col-7">
+              <label for="topic-edit-source"><i class="fa-solid fa-bookmark"></i> İzlenen Kaynak / Hoca / Kitap</label>
+              <input type="text" id="topic-edit-source" placeholder="Örn: Hız ve Renk, Benim Hocam, MEB Kitabı vb.">
+            </div>
+          </div>
+        </div>
+
+        <!-- Soru Sayısı ve Doğru-Yanlış Analizi -->
+        <div class="form-section-card">
+          <div class="form-section-title">
+            <i class="fa-solid fa-calculator text-warning"></i>
+            <span>Soru Çözümü & Doğru-Yanlış (D-Y) Analizi</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-4">
+              <label for="topic-edit-solved-q"><i class="fa-solid fa-pen-nib"></i> Çözülen Soru</label>
+              <input type="number" id="topic-edit-solved-q" min="0" placeholder="0" oninput="calculateTopicAccuracyPreview()">
+            </div>
+            <div class="form-group col-4">
+              <label for="topic-edit-correct-q" class="text-success"><i class="fa-solid fa-check"></i> Doğru (D)</label>
+              <input type="number" id="topic-edit-correct-q" min="0" placeholder="0" oninput="calculateTopicAccuracyPreview()">
+            </div>
+            <div class="form-group col-4">
+              <label for="topic-edit-wrong-q" class="text-danger"><i class="fa-solid fa-xmark"></i> Yanlış (Y)</label>
+              <input type="number" id="topic-edit-wrong-q" min="0" placeholder="0" oninput="calculateTopicAccuracyPreview()">
+            </div>
+          </div>
+
+          <!-- Hesaplanan Doğruluk Önizlemesi -->
+          <div class="topic-calc-preview" id="topic-calc-preview">
+            <span class="preview-item">Başarı Yüzdesi: <strong id="topic-calc-pct">%0</strong></span>
+            <span class="preview-item">Net: <strong id="topic-calc-net">0.00</strong></span>
+          </div>
+        </div>
+
+        <!-- Koçun Konu Değerlendirme & Yönlendirme Notu -->
+        <div class="form-group">
+          <label for="topic-edit-coach-note"><i class="fa-solid fa-comment-dots"></i> Koçun Bu Konu İçin Özel Notu / Tavsiyesi</label>
+          <textarea id="topic-edit-coach-note" rows="2" placeholder="Örn: Temel seviye sorular bitti. Bu hafta yeni nesil ve çıkmış sorulara odaklanalım..."></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-topic-edit')">İptal</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fa-solid fa-floppy-disk"></i> Konu Bilgilerini Kaydet
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 7. ÖĞRENCİ KONU ÇALIŞMA BİLDİRİM MODALI -->
+  <div id="modal-student-topic-update" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-circle-check text-success"></i> Konu Çalışmamı Güncelle</h3>
+        <button class="modal-close" onclick="closeModal('modal-student-topic-update')">&times;</button>
+      </div>
+
+      <form id="student-topic-update-form" class="modal-form">
+        <input type="hidden" id="student-topic-id-input" value="">
+
+        <div class="topic-modal-subject-banner" id="student-topic-modal-banner">
+          <span class="subject-badge" id="student-topic-subject-badge">Matematik</span>
+          <h4 id="student-topic-name-heading">-</h4>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-custom">
+            <input type="checkbox" id="st-topic-watched-check">
+            <span><b>Konu anlatımı videosunu izledim / konuyu çalıştım (✓)</b></span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label for="st-topic-source-input"><i class="fa-solid fa-bookmark"></i> İzlediğin Kanal / Kaynak Kitap (Opsiyonel)</label>
+          <input type="text" id="st-topic-source-input" placeholder="Örn: YouTube Mert Hoca, 3D Soru Bankası">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-4">
+            <label for="st-topic-solved-input"><i class="fa-solid fa-pen-nib"></i> Toplam Soru</label>
+            <input type="number" id="st-topic-solved-input" min="0" placeholder="0">
+          </div>
+          <div class="form-group col-4">
+            <label for="st-topic-correct-input" class="text-success"><i class="fa-solid fa-check"></i> Doğru (D)</label>
+            <input type="number" id="st-topic-correct-input" min="0" placeholder="0">
+          </div>
+          <div class="form-group col-4">
+            <label for="st-topic-wrong-input" class="text-danger"><i class="fa-solid fa-xmark"></i> Yanlış (Y)</label>
+            <input type="number" id="st-topic-wrong-input" min="0" placeholder="0">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-student-topic-update')">Kapat</button>
+          <button type="submit" class="btn btn-success">
+            <i class="fa-solid fa-check"></i> İlerlememi Kaydet
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 8. YENİ ÖZEL KONU EKLEME MODALI (KOÇ / ADMIN) -->
+  <div id="modal-custom-topic" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-plus-circle text-primary"></i> Müfredata Yeni Özel Konu Ekle</h3>
+        <button class="modal-close" onclick="closeModal('modal-custom-topic')">&times;</button>
+      </div>
+
+      <form id="custom-topic-form" class="modal-form">
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="custom-topic-exam-type"><i class="fa-solid fa-graduation-cap"></i> Sınav Türü</label>
+            <select id="custom-topic-exam-type" required>
+              <option value="TYT">TYT (Temel Yeterlilik)</option>
+              <option value="AYT">AYT (Alan Yeterlilik)</option>
+            </select>
+          </div>
+          <div class="form-group col-6">
+            <label for="custom-topic-subject"><i class="fa-solid fa-book"></i> Ders</label>
+            <select id="custom-topic-subject" required>
+              <option value="Türkçe">Türkçe</option>
+              <option value="Temel Matematik">Temel Matematik</option>
+              <option value="Geometri">Geometri</option>
+              <option value="Fizik">Fizik</option>
+              <option value="Kimya">Kimya</option>
+              <option value="Biyoloji">Biyoloji</option>
+              <option value="Tarih">Tarih</option>
+              <option value="Coğrafya">Coğrafya</option>
+              <option value="Felsefe/Din">Felsefe/Din</option>
+              <option value="AYT Matematik">AYT Matematik</option>
+              <option value="AYT Fizik">AYT Fizik</option>
+              <option value="AYT Kimya">AYT Kimya</option>
+              <option value="AYT Biyoloji">AYT Biyoloji</option>
+              <option value="Edebiyat">Edebiyat</option>
+              <option value="Tarih-1">Tarih-1</option>
+              <option value="Coğrafya-1">Coğrafya-1</option>
+              <option value="Diğer">Diğer</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="custom-topic-name"><i class="fa-solid fa-heading"></i> Ana Konu Başlığı</label>
+          <input type="text" id="custom-topic-name" placeholder="Örn: Türev - Fiziksel Yorum ve Maks-Min" required>
+        </div>
+
+        <div class="form-group">
+          <label for="custom-topic-subtopics"><i class="fa-solid fa-list-ul"></i> Alt Başlıklar (Her satıra bir alt başlık)</label>
+          <textarea id="custom-topic-subtopics" rows="3" placeholder="Alt Başlık 1&#10;Alt Başlık 2&#10;Alt Başlık 3"></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-custom-topic')">İptal</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Konuyu Müfredata Ekle
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 9. ÖZEL DERS / SEANS PLANLAMA VE DÜZENLEME MODALI (KOÇ / ADMIN) -->
+  <div id="modal-lesson" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-lesson-title"><i class="fa-solid fa-calendar-plus text-primary"></i> Yeni Özel Ders / Seans Planla</h3>
+        <button class="modal-close" onclick="closeModal('modal-lesson')">&times;</button>
+      </div>
+
+      <form id="lesson-form" class="modal-form">
+        <input type="hidden" id="lesson-edit-id" value="">
+
+        <div class="form-group">
+          <label for="lesson-student-select"><i class="fa-solid fa-user-graduate"></i> Öğrenci Seçimi</label>
+          <select id="lesson-student-select" required>
+            <!-- Dinamik öğrenci listesi -->
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="lesson-date"><i class="fa-regular fa-calendar"></i> Ders Tarihi</label>
+            <input type="date" id="lesson-date" required>
+          </div>
+
+          <div class="form-group col-6">
+            <label for="lesson-time"><i class="fa-regular fa-clock"></i> Ders Saati <span class="badge-subtle-hint">(Opsiyonel)</span></label>
+            <input type="text" id="lesson-time" placeholder="Örn: 16:30 veya 16:30 - 17:30" list="lesson-time-presets">
+            <datalist id="lesson-time-presets">
+              <option value="10:00 - 11:00">
+              <option value="11:30 - 12:30">
+              <option value="14:00 - 15:00">
+              <option value="15:30 - 16:30">
+              <option value="16:30 - 17:30">
+              <option value="17:00 - 18:00">
+              <option value="18:30 - 19:30">
+              <option value="20:00 - 21:00">
+            </datalist>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="lesson-subject"><i class="fa-solid fa-book"></i> Ders / Alan</label>
+            <select id="lesson-subject" required>
+              <option value="Matematik">Matematik</option>
+              <option value="Geometri">Geometri</option>
+              <option value="Fizik">Fizik</option>
+              <option value="Kimya">Kimya</option>
+              <option value="Biyoloji">Biyoloji</option>
+              <option value="Türkçe">Türkçe</option>
+              <option value="Edebiyat">Edebiyat</option>
+              <option value="Tarih">Tarih</option>
+              <option value="Coğrafya">Coğrafya</option>
+              <option value="Felsefe / Din">Felsefe / Din</option>
+              <option value="Koçluk & Rehberlik">Koçluk & Rehberlik Görüşmesi</option>
+              <option value="Deneme Analiz Seansı">Deneme Analiz Seansı</option>
+              <option value="Diğer">Diğer</option>
+            </select>
+          </div>
+
+          <div class="form-group col-6">
+            <label for="lesson-status"><i class="fa-solid fa-circle-check"></i> Ders Durumu</label>
+            <select id="lesson-status" required>
+              <option value="completed">✅ Yapıldı (Tamamlandı)</option>
+              <option value="planned" selected>⏳ Planlandı (Bekliyor)</option>
+              <option value="cancelled">❌ İptal Edildi / Ertelendi</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="lesson-topic"><i class="fa-solid fa-heading"></i> İşlenen / Planlanan Konu Başlığı</label>
+          <input type="text" id="lesson-topic" placeholder="Örn: Türev Geometrik Yorum & Soru Çözümü" required>
+        </div>
+
+        <div class="form-group">
+          <label for="lesson-note"><i class="fa-solid fa-align-left"></i> Ders Notu & Ödevler (Opsiyonel)</label>
+          <textarea id="lesson-note" rows="2" placeholder="Örn: 3D soru bankasından test 4-5 ödev verildi, haftaya kontrol edilecek..."></textarea>
+        </div>
+
+        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+          <button type="button" class="btn btn-danger btn-sm hidden" id="btn-delete-lesson" onclick="handleDeleteCurrentLesson()">
+            <i class="fa-solid fa-trash"></i> Dersi Sil
+          </button>
+          <div style="display: flex; gap: 0.5rem; margin-left: auto;">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('modal-lesson')">İptal</button>
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-solid fa-floppy-disk"></i> Dersi Kaydet
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Uygulama Scripti -->
+  <script src="app.js"></script>
+</body>
+
+</html>
