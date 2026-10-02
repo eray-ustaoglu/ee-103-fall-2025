@@ -5185,17 +5185,288 @@ textarea:focus {
     border-radius: 20px !important;
   }
 
-  /* 8. Deneme Sınavı & Yanlış Analizi */
-  .exam-metrics-cards {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 0.5rem !important;
+  /* 8. Deneme Sınavı & Yanlış Analizi (Sideways / Yatay Kaydırılabilir Kutucuklar) */
+  .targets-comparison-grid {
+    display: flex !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0.85rem !important;
+    padding: 0.2rem 0.2rem 0.75rem !important;
+    margin-bottom: 1.25rem !important;
   }
 
-  .exam-history-list {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    gap: 0.65rem !important;
+  .targets-comparison-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .target-net-card {
+    flex: 0 0 88% !important;
+    min-width: 290px !important;
+    max-width: 380px !important;
+    scroll-snap-align: center;
+    padding: 1.15rem 1rem !important;
+    border-radius: 16px !important;
+  }
+
+  .target-metrics-row {
+    display: flex !important;
+    overflow-x: auto !important;
+    gap: 0.45rem !important;
+    scrollbar-width: none;
+    margin-bottom: 0.85rem !important;
+  }
+
+  .target-metrics-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .target-metric-box {
+    flex: 1 1 0 !important;
+    min-width: 78px !important;
+    padding: 0.55rem 0.45rem !important;
+  }
+
+  .target-metric-box .metric-val {
+    font-size: 1.15rem !important;
+  }
+
+  /* Ortalama TYT/AYT İstatistik Çubuğu (Yatay Kaydırma) */
+  .exam-stats-row {
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    gap: 0.6rem !important;
+    padding: 0.2rem 0.2rem 0.6rem !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-bottom: 1rem !important;
+  }
+
+  .exam-stats-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .exam-stat-box {
+    flex: 0 0 155px !important;
+    min-width: 155px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.55rem !important;
+    padding: 0.75rem 0.85rem !important;
+    border-radius: 14px !important;
+  }
+
+  .exam-stat-box .val {
+    font-size: 1.25rem !important;
+  }
+
+  /* Deneme İlerleyiş Grafiği */
+  .exam-chart-card {
+    padding: 1rem 0.85rem !important;
+    border-radius: 16px !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .chart-header-flex {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.6rem !important;
+  }
+
+  .chart-svg-wrapper {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.5rem !important;
+    scrollbar-width: thin;
+  }
+
+  .chart-svg-wrapper svg {
+    min-width: 520px !important;
+  }
+
+  /* Filtre Hapları (Yatay Kaydırılabilir) */
+  .exam-filter-bar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.6rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .exam-filter-bar .filter-pills,
+  .chart-controls .filter-pills {
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    gap: 0.35rem !important;
+    padding-bottom: 0.3rem !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .exam-filter-bar .filter-pills::-webkit-scrollbar,
+  .chart-controls .filter-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-pill {
+    flex-shrink: 0 !important;
+    padding: 0.45rem 0.85rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  .search-box-wrapper input {
+    font-size: 16px !important;
+  }
+
+  /* Analiz Grid: Sol (Konu Özeti) ve Sağ (Deneme Kartları) */
+  .exam-dashboard-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+
+  .exam-analytics-card,
+  .exam-cards-container {
+    width: 100% !important;
+    padding: 1rem 0.85rem !important;
+    border-radius: 16px !important;
+  }
+
+  /* Konu Hata Kartı */
+  .topic-mistake-item {
+    padding: 0.75rem 0.85rem !important;
+    border-radius: 12px !important;
+    margin-bottom: 0.65rem !important;
+  }
+
+  .topic-mistake-top {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .topic-name {
+    font-size: 0.85rem !important;
+  }
+
+  .topic-reasons-wrap {
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    gap: 0.3rem !important;
+    scrollbar-width: none;
+    max-width: 100%;
+  }
+
+  .topic-reasons-wrap::-webkit-scrollbar {
+    display: none;
+  }
+
+  .badge-reason {
+    flex-shrink: 0 !important;
+    font-size: 0.7rem !important;
+    padding: 0.15rem 0.45rem !important;
+  }
+
+  /* Deneme Kartı */
+  .mock-exam-card {
+    padding: 1rem 0.85rem !important;
+    border-radius: 16px !important;
+    margin-bottom: 0.85rem !important;
+  }
+
+  .exam-card-header {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    margin-bottom: 0.85rem !important;
+  }
+
+  .exam-card-title {
+    font-size: 0.92rem !important;
+    line-height: 1.25 !important;
+  }
+
+  .exam-card-total-net {
+    flex-shrink: 0 !important;
+    padding: 0.4rem 0.65rem !important;
+    border-radius: 12px !important;
+  }
+
+  .exam-card-total-net .net-val {
+    font-size: 1.25rem !important;
+  }
+
+  /* Ders Net Dağılım Kutucukları (Sideways / Yatay Kaydırma) */
+  .exam-subjects-grid {
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    gap: 0.5rem !important;
+    padding: 0.2rem 0.2rem 0.6rem !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-bottom: 0.85rem !important;
+  }
+
+  .exam-subjects-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .subject-net-chip {
+    flex: 0 0 auto !important;
+    min-width: 125px !important;
+    padding: 0.5rem 0.7rem !important;
+    border-radius: 10px !important;
+  }
+
+  .subject-net-chip .chip-net-val {
+    font-size: 0.98rem !important;
+  }
+
+  /* Yanlış Yapılan Konular Listesi */
+  .exam-mistakes-box {
+    margin-bottom: 0.85rem !important;
+  }
+
+  .exam-mistake-row {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.45rem !important;
+    padding: 0.65rem 0.75rem !important;
+    border-radius: 10px !important;
+    margin-bottom: 0.45rem !important;
+  }
+
+  .mistake-left-info {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 0.35rem !important;
+    width: 100% !important;
+  }
+
+  .mistake-topic-title {
+    font-size: 0.84rem !important;
+    font-weight: 700;
+  }
+
+  .exam-card-footer-actions {
+    display: flex !important;
+    gap: 0.5rem !important;
+    margin-top: 0.75rem !important;
+  }
+
+  .exam-card-footer-actions .btn {
+    flex: 1 1 50% !important;
+    justify-content: center !important;
+    padding: 0.5rem !important;
+    font-size: 0.82rem !important;
   }
 
   .mistake-row-card {
