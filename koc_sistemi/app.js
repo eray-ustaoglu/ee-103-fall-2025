@@ -5115,8 +5115,59 @@ window.exportScheduleData = function() {
   document.body.appendChild(downloadAnchor);
   downloadAnchor.click();
   downloadAnchor.remove();
-  showToast('Program verileri başarıyla indirildi.', 'success');
+  showToast('Program verileri ve tüm öğrenci kayıtları başarıyla indirildi.', 'success');
 };
+
+window.importScheduleData = function(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const importedData = JSON.parse(e.target.result);
+      if (!importedData || typeof importedData !== 'object') {
+        throw new Error('Geçersiz dosya formatı.');
+      }
+
+      if (!importedData.students || !Array.isArray(importedData.students)) {
+        throw new Error('Yedek dosyasında öğrenci verisi bulunamadı.');
+      }
+
+      appState = {
+        admin: importedData.admin || appState.admin,
+        students: importedData.students || [],
+        tasks: importedData.tasks || [],
+        mockExams: importedData.mockExams || [],
+        lessons: importedData.lessons || [],
+        customCurriculums: importedData.customCurriculums || {}
+      };
+
+      saveDatabase();
+      showToast(`${appState.students.length} öğrenci ve tüm veriler başarıyla yüklendi!`, 'success');
+
+      if (currentSession) {
+        if (currentSession.role === 'coach') {
+          renderStudentSelector();
+          if (appState.students.length > 0) {
+            selectedStudentId = appState.students[0].id;
+            renderCoachDashboard();
+          }
+        } else {
+          renderStudentDashboard();
+        }
+      } else {
+        setTimeout(() => window.location.reload(), 1200);
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Yedek yüklenirken hata oluştu: ' + err.message, 'error');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+};
+
 
 function escapeHtml(string) {
   if (!string) return '';

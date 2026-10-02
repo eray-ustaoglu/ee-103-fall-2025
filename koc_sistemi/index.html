@@ -278,7 +278,11 @@
                 <span class="schedule-sub">Pazartesi'den Pazar'a tüm günlerin ders ve görev dağılımı</span>
               </div>
               <div class="quick-tools">
-                <button class="btn btn-sm btn-secondary" onclick="exportScheduleData()">
+                <input type="file" id="import-json-input" accept=".json" style="display: none;" onchange="importScheduleData(event)">
+                <button class="btn btn-sm btn-secondary" onclick="document.getElementById('import-json-input').click()" title="Yedek JSON Dosyasından Veri Yükle">
+                  <i class="fa-solid fa-upload"></i> İçe Aktar (Yedek Yükle)
+                </button>
+                <button class="btn btn-sm btn-secondary" onclick="exportScheduleData()" title="Tüm Verileri JSON Olarak İndir">
                   <i class="fa-solid fa-download"></i> Dışa Aktar
                 </button>
               </div>
